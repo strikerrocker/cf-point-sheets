@@ -1,0 +1,22 @@
+{
+  "name": "cf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "edge-paths": "^2.2.1",
+    "googleapis": "^39.2.0",
+    "puppeteer": "^13.1.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strikerrocker/cf-point-sheets.git"
+  },
+  "author": "",
+  "license": "ARR",
+  "bugs": {
+    "url": "https://github.com/strikerrocker/cf-point-sheets/issues"
+  },
+  "homepage": "https://github.com/strikerrocker/cf-point-sheets#readme"
+}
