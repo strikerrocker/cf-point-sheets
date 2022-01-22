@@ -1,0 +1,25 @@
+# Setup
+- Clone the repository
+- Setup the node module by running the command `npm install` (This will take some time depending on your connection as it install puppeteer is about 200MB)
+- Go to the following project and create a new project  https://console.cloud.google.com/
+	- Follow the instructions in this [link](https://developers.google.com/workspace/guides/configure-oauth-consent)
+	- For scopes add this https://www.googleapis.com/auth/drive
+	- Add your email address as the test user ( Easy to step to miss! )
+- Go to this link https://console.cloud.google.com/apis/library/sheets.googleapis.com and click enable and manage and create credentials
+		- Select Google Sheets API
+		- For data, select User data
+		- Add the scope you already added to OAuth screen
+		- Select `Desktop` as Application Type
+		- Download the json and save it as `credentials.json` in credentials directory
+	- Create a google sheet where you want the data to inserted automatically.
+	- Open the sheet and copy the part of URL between `/d` and `/edit`
+	- Paste the copied part in line 85 of `parse_to_sheets.js` between the double quotes
+# Running
+- Launch program by using the command `node index.js`
+- Chromium web browser should launch and will ask for your curseforge login. Enter the login. After successful login the program will automatically terminate. 
+- Run the program again. 
+- It will provide a link in the console follow the instructions there.
+- When asked if you want to give access press Yes and copy the code it gives and paste it in the terminal. 
+- The program will run and if the `Sheet ID doesn't exists in the given spreadsheet` is given in the terminal copy the sheet id for the sheet you want from the table above the message
+	- Set the variable value in line 87 in `parse_to_sheets.js` as the sheet you want.
+- Run the program again and the parsed data should be in the google sheet.

@@ -17,8 +17,8 @@ function parseTextAndUpload() {
   });
 }
 function parseAndUpload(data) {
-  // Get credentials by creating new project and then adding google sheets api 
-  // with full drive scope and save credential in /credentials/credentials.json 
+  // Get credentials by creating new project and then adding google sheets api
+  // with full drive scope and save credential in /credentials/credentials.json
   fs.readFile("./credentials/credentials.json", async (err, content) => {
     if (err) return console.log("Error loading client secret file:", err);
     // Authorize a client with credentials, then call the Google Sheets API.
@@ -84,16 +84,29 @@ async function saveCFPoints(auth, data) {
   // Get the spreadsheet id from the URL when open
   const spreadsheet_id = "1HtQhR3bMqUcHnrgPXKnFR7EG8IFcAP3waY8Jehmxrew";
   const sheets = google.sheets({ version: "v4", auth });
+  const sheet_id = 1866365031;
   var output = "";
   // Use this to get the sheet id you wish to enter your data into and enter it in the variable below
   sheets.spreadsheets.get(
     { spreadsheetId: spreadsheet_id, fields: "sheets.properties" },
     (err, res) => {
-      console.log(res.data.sheets);
+      var exists = false;
+      console.table(
+        res.data.sheets.map((data) => {
+          return {
+            Title: data.properties.title,
+            "Sheet ID": data.properties.sheetId,
+          };
+        })
+      );
+      for (data of res.data.sheets)
+        if (data.properties.sheetId == sheet_id) exists = true;
+      if (!exists) {
+        console.error("Sheet ID doesn't exists in the given spreadsheet");
+        process.exit(0);
+      }
     }
   );
-
-  const sheet_id = 1866365031;
 
   var dates = [];
   var projects = [];
@@ -181,6 +194,7 @@ async function saveCFPoints(auth, data) {
     { body: JSON.stringify(body) },
     (err, res) => {
       if (err) console.log(err);
+      if(res.status==200) console.log("Successfully inserted data")
     }
   );
 }
