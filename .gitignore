@@ -1,3 +1,6 @@
 /node_modules
 /credentials/*
 /data/*
+
+!credentials/.gitkeep
+!data/.gitkeep
