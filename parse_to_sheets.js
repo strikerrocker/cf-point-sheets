@@ -2,7 +2,6 @@ const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
 
-// If modifying these scopes, delete token.json.
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -18,7 +17,8 @@ function parseTextAndUpload() {
   });
 }
 function parseAndUpload(data) {
-  // Load client secrets from a local file.
+  // Get credentials by creating new project and then adding google sheets api 
+  // with full drive scope and save credential in /credentials/credentials.json 
   fs.readFile("./credentials/credentials.json", async (err, content) => {
     if (err) return console.log("Error loading client secret file:", err);
     // Authorize a client with credentials, then call the Google Sheets API.
@@ -29,8 +29,6 @@ function parseAndUpload(data) {
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback, data) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
@@ -51,8 +49,7 @@ function authorize(credentials, callback, data) {
 /**
  * Get and store new token after prompting for user authorization, and then
  * execute the given callback with the authorized OAuth2 client.
- * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback for the authorized client.
+ * Dont forget to add your email id to test users in OAuth2 screen.
  */
 function getNewToken(oAuth2Client, callback, data) {
   const authUrl = oAuth2Client.generateAuthUrl({
@@ -84,17 +81,20 @@ function getNewToken(oAuth2Client, callback, data) {
 }
 
 async function saveCFPoints(auth, data) {
-  const sheet_id = "1HtQhR3bMqUcHnrgPXKnFR7EG8IFcAP3waY8Jehmxrew";
+  // Get the spreadsheet id from the URL when open
+  const spreadsheet_id = "1HtQhR3bMqUcHnrgPXKnFR7EG8IFcAP3waY8Jehmxrew";
   const sheets = google.sheets({ version: "v4", auth });
   var output = "";
+  // Use this to get the sheet id you wish to enter your data into and enter it in the variable below
   sheets.spreadsheets.get(
-    { spreadsheetId: sheet_id, fields: "sheets.properties" },
+    { spreadsheetId: spreadsheet_id, fields: "sheets.properties" },
     (err, res) => {
-      console.log(res.data.sheets[0]);
+      console.log(res.data.sheets);
     }
   );
 
-  var lines = data.split("\n");
+  const sheet_id = 1866365031;
+
   var dates = [];
   var projects = [];
   var total = new Map();
@@ -102,7 +102,7 @@ async function saveCFPoints(auth, data) {
   var temp = new Map();
 
   //Parses data
-  lines.forEach((line) => {
+  data.split("\n").forEach((line) => {
     if (line != undefined) {
       var data = line.trim().replace(",", "");
       if (!data.includes("points")) {
@@ -138,7 +138,7 @@ async function saveCFPoints(auth, data) {
     total.set(date, temp);
     temp = new Map();
   }
-  //Top row
+  // Project Details
   output += "Date,";
   projects.forEach((p) => {
     output += p + ",";
@@ -165,7 +165,7 @@ async function saveCFPoints(auth, data) {
       {
         pasteData: {
           coordinate: {
-            sheetId: 1866365031,
+            sheetId: sheet_id,
             rowIndex: 0,
             columnIndex: 0,
           },
@@ -177,7 +177,7 @@ async function saveCFPoints(auth, data) {
     ],
   };
   sheets.spreadsheets.batchUpdate(
-    { spreadsheetId: sheet_id },
+    { spreadsheetId: spreadsheet_id },
     { body: JSON.stringify(body) },
     (err, res) => {
       if (err) console.log(err);
