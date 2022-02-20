@@ -40,7 +40,9 @@ function authorize(credentials, callback, data) {
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewToken(oAuth2Client, callback, data);
+    var tokenJSON = JSON.parse(token);
+    var dateDiff = new Date(tokenJSON.expiry_date) - new Date();
+    if (err || dateDiff < 0) return getNewToken(oAuth2Client, callback, data);
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client, data);
   });
@@ -194,7 +196,7 @@ async function saveCFPoints(auth, data) {
     { body: JSON.stringify(body) },
     (err, res) => {
       if (err) console.log(err);
-      if(res.status==200) console.log("Successfully inserted data")
+      if (res.status == 200) console.log("Successfully inserted data");
     }
   );
 }
